@@ -18,21 +18,16 @@ const HomePage = () => {
       <button onClick={async() => {
         await fetch(`${process.env.WEB_API_URL || '/.redwood/functions'}/create-queue`,
           {
-            method: 'POST',
-            mode: 'no-cors',
+            mode: 'no-cors'
           }
         ).then(async(_result) => {
 
           await fetch(`${process.env.WEB_API_URL || '/.redwood/functions'}/process-queue`,
           {
-            method: 'POST',
-            mode: 'no-cors',
+            mode: 'no-cors'
           }
-        ).then(res =>
-          res.json().then(r => {
-            console.log('--this is jsonned', r)
-          })
         )
+
 
         })
 
