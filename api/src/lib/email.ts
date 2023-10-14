@@ -1,6 +1,9 @@
-import { Queue } from "bullmq";
 import { CONFIG } from "./constants";
+import  Queue from "bull";
 
 export const emailQueue = new Queue('email', {
-  connection: CONFIG.redis.jobQueueConnection,
+  redis: CONFIG.redis.jobQueueConnection,
+  settings: {
+    lockDuration: 60000
+  }
 })

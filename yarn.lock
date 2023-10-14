@@ -7395,6 +7395,7 @@ __metadata:
     "@redwoodjs/api": 3.2.0
     "@redwoodjs/graphql-server": 3.2.0
     axios: ^1.5.1
+    bull: ^4.11.4
     inngest: 0.8.7
   languageName: unknown
   linkType: soft
@@ -8654,6 +8655,21 @@ __metadata:
   version: 3.0.0
   resolution: "builtin-status-codes@npm:3.0.0"
   checksum: c37bbba11a34c4431e56bd681b175512e99147defbe2358318d8152b3a01df7bf25e0305873947e5b350073d5ef41a364a22b37e48f1fb6d2fe6d5286a0f348c
+  languageName: node
+  linkType: hard
+
+"bull@npm:^4.11.4":
+  version: 4.11.4
+  resolution: "bull@npm:4.11.4"
+  dependencies:
+    cron-parser: ^4.2.1
+    get-port: ^5.1.1
+    ioredis: ^5.3.2
+    lodash: ^4.17.21
+    msgpackr: ^1.5.2
+    semver: ^7.5.2
+    uuid: ^8.3.0
+  checksum: e09e54a090f9a646b1c954fc7ce859f496d5d7b5dae29e4a58711e22ce7c91e498509c2bee022ea8185e850e31d1a633344e691a19adbb8bf4e5cdc4ffbf3df6
   languageName: node
   linkType: hard
 
@@ -9971,7 +9987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cron-parser@npm:^4.6.0":
+"cron-parser@npm:^4.2.1, cron-parser@npm:^4.6.0":
   version: 4.9.0
   resolution: "cron-parser@npm:4.9.0"
   dependencies:
@@ -13024,6 +13040,13 @@ __metadata:
   version: 0.1.0
   resolution: "get-package-type@npm:0.1.0"
   checksum: e34cdf447fdf1902a1f6d5af737eaadf606d2ee3518287abde8910e04159368c268568174b2e71102b87b26c2020486f126bfca9c4fb1ceb986ff99b52ecd1be
+  languageName: node
+  linkType: hard
+
+"get-port@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "get-port@npm:5.1.1"
+  checksum: 2873877a469b24e6d5e0be490724a17edb39fafc795d1d662e7bea951ca649713b4a50117a473f9d162312cb0e946597bd0e049ed2f866e79e576e8e213d3d1c
   languageName: node
   linkType: hard
 
@@ -17264,7 +17287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msgpackr@npm:^1.6.2":
+"msgpackr@npm:^1.5.2, msgpackr@npm:^1.6.2":
   version: 1.9.9
   resolution: "msgpackr@npm:1.9.9"
   dependencies:
@@ -20804,7 +20827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.5.4":
+"semver@npm:^7.5.2, semver@npm:^7.5.4":
   version: 7.5.4
   resolution: "semver@npm:7.5.4"
   dependencies:
@@ -23220,7 +23243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:8.3.2, uuid@npm:^8.3.2":
+"uuid@npm:8.3.2, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
