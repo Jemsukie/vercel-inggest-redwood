@@ -52,7 +52,10 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
     let i = 0
 
     while(i < jobs.length){
-      await emailProcess().then(_r => console.log(`Process ${jobs[i].id} Done!`))
+      await emailProcess().then(async(_r) => {
+        console.log(`Process ${jobs[i].id} Done!`)
+        await jobs[i].moveToCompleted('Successfully completed!', 'email')
+      })
       await i++
     }
   })
