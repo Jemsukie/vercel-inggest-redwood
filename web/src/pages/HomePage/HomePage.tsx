@@ -21,14 +21,12 @@ const HomePage = () => {
             mode: 'no-cors'
           }
         ).then(async(_result) => {
-
-          await fetch(`${process.env.WEB_API_URL || '/.redwood/functions'}/process-queue`,
-          {
+          console.log('Adding to queue done!')
+          await fetch(`${process.env.WEB_API_URL || '/.redwood/functions'}/process-queue`,{
             mode: 'no-cors'
-          }
-        )
-
-
+          }).then(_r => {
+          console.log('Processing done!')
+          })
         })
 
       }}>Call function</button>
