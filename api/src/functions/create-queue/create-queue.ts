@@ -35,8 +35,8 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       batch: 'Batch  1',
       origin: 'www.google.com',
     },
-  ).then(_queue => {
-    const worker = new Worker(
+  ).then(async(_queue) => {
+    const worker = await new Worker(
       'email',
       async (job) => {
         const { id, data } = job
@@ -53,33 +53,33 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       }
     )
 
-    worker.on('completed', (job) => {
+    await worker.on('completed', (job) => {
       CONFIG.vercel.environment === 'production'
         ? console.log(`Job ID: ${job.id} is done!`)
         : logger.info(`Job ID: ${job.id} is done!`)
     })
-    worker.on('active', (job) => {
+    await worker.on('active', (job) => {
       CONFIG.vercel.environment === 'production'
         ? console.log(`Job ID: ${job.id} is running!`)
         : logger.info(`Job ID: ${job.id} is running!`)
     })
-    worker.on('error', (err) => {
+    await worker.on('error', (err) => {
       CONFIG.vercel.environment === 'production'
         ? console.error(err)
         : logger.error(err)
     })
 
-    worker.on('failed', (job, err) => {
+    await worker.on('failed', (job, err) => {
       CONFIG.vercel.environment === 'production'
         ? console.error(`${job?.id} has failed with ${err.message}`)
         : logger.error(`${job?.id} has failed with ${err.message}`)
     })
-    worker.on('drained', () => {
+    await worker.on('drained', async() => {
       CONFIG.vercel.environment === 'production'
         ? console.log(`No more jobs`)
         : logger.info(`No more jobs`)
 
-        worker.close()
+        await worker.close()
     })
   })
 
