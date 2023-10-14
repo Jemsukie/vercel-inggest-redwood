@@ -21,33 +21,25 @@ const axios = require('axios');
  */
 
 const emailProcess = async () => {
-    try {
-      const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
-        sender: {
-          name: `"Atlas Admin" <${CONFIG.brevo.senderEmail}>`,
-          email: CONFIG.brevo.tempSenderEmail,
-        },
-        to: [
-          {
-            email: 'jemuel.lupo@gmail.com',
-            name: 'Dev Testing',
-          },
-        ],
-        htmlContent: 'Hello, this is testing',
-        subject: 'Testing this part',
-      }, {
-        headers: {
-          'accept': 'application/json',
-          'api-key': CONFIG.brevo.apiKey,
-        },
-      });
-
-      // Handle the response here if needed
-      console.log('Email sent:', response.data);
-    } catch (error) {
-      // Handle errors here
-      console.error('Error sending email:', error);
-    }
+  return await axios.post('https://api.brevo.com/v3/smtp/email', {
+    sender: {
+      name: `"Atlas Admin" <${CONFIG.brevo.senderEmail}>`,
+      email: CONFIG.brevo.tempSenderEmail,
+    },
+    to: [
+      {
+        email: 'jemuel.lupo@gmail.com',
+        name: 'Dev Testing',
+      },
+    ],
+    htmlContent: 'Hello, this is testing',
+    subject: 'Testing this part',
+  }, {
+    headers: {
+      'accept': 'application/json',
+      'api-key': CONFIG.brevo.apiKey,
+    },
+  });
   };
 
 export const handler = async (event: APIGatewayEvent, context: Context) => {
@@ -58,11 +50,9 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
 
   const jobs = await emailQueue.getJobs()
 
-  console.log('--this is jobs', jobs)
-
   await Promise.all(
-    jobs.map(_j => {
-      emailProcess()
+    jobs.map(async(_j) => {
+       emailProcess()
     })
   ).then(_p => console.log('All jobs done')).catch(e => console.error(e.message))
 
