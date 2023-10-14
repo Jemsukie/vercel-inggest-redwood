@@ -38,7 +38,19 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
     {
       removeOnComplete: true,
     }
-  )
+  ).then(async(_r) => {
+    await emailQueue.getJobs(['delayed', 'waiting', 'active']).then(async(jobs) => {
+      let i = 0
+
+      while(i < jobs.length){
+        await emailProcess().then(async(_r) => {
+          console.log(`Process ${jobs[i].id} Done!`)
+          await jobs[i].moveToCompleted('Successfully completed!', true)
+        })
+        await i++
+      }
+    })
+  })
   // .then(async(_queue) => {
   //   const worker = await new Worker(
   //     'email',
