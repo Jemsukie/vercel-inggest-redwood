@@ -34,7 +34,7 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
     },
     {
       // attempts: 5,
-      removeOnComplete: true,
+      // removeOnComplete: true,
       // priority: 1,
     }
   )

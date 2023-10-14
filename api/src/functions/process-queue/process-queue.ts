@@ -35,10 +35,10 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       await emailProcess()
     },
     {
-      removeOnComplete: {
-        age: 1,
-        count: 0,
-      },
+      // removeOnComplete: {
+      //   age: 1,
+      //   count: 0,
+      // },
       lockDuration: 30000,
       connection: CONFIG.redis.jobQueueConnection,
     }

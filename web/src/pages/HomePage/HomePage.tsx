@@ -26,8 +26,8 @@ const HomePage = () => {
             mode: 'no-cors'
           }).then(_r => {
           console.log('Processing done!')
-          })
-        })
+          }).catch(err => console.error(err))
+        }).catch(err => console.error(err))
 
       }}>Call function</button>
     </>
