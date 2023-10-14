@@ -35,53 +35,57 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       batch: 'Batch  1',
       origin: 'www.google.com',
     },
-  ).then(async(_queue) => {
-    const worker = await new Worker(
-      'email',
-      async (job) => {
-        const { id, data } = job
+    {
+      removeOnComplete: true,
+    }
+  )
+  // .then(async(_queue) => {
+  //   const worker = await new Worker(
+  //     'email',
+  //     async (job) => {
+  //       const { id, data } = job
 
-        CONFIG.vercel.environment === 'production'
-          ? console.log(`Job ID: ${id} is being processed!`)
-          : logger.info(`Job ID: ${id} is being processed!`)
+  //       CONFIG.vercel.environment === 'production'
+  //         ? console.log(`Job ID: ${id} is being processed!`)
+  //         : logger.info(`Job ID: ${id} is being processed!`)
 
-        await emailProcess()
-      },
-      {
-        lockDuration: 30000,
-        connection: CONFIG.redis.jobQueueConnection,
-      }
-    )
+  //       await emailProcess()
+  //     },
+  //     {
+  //       lockDuration: 30000,
+  //       connection: CONFIG.redis.jobQueueConnection,
+  //     }
+  //   )
 
-    await worker.on('completed', (job) => {
-      CONFIG.vercel.environment === 'production'
-        ? console.log(`Job ID: ${job.id} is done!`)
-        : logger.info(`Job ID: ${job.id} is done!`)
-    })
-    await worker.on('active', (job) => {
-      CONFIG.vercel.environment === 'production'
-        ? console.log(`Job ID: ${job.id} is running!`)
-        : logger.info(`Job ID: ${job.id} is running!`)
-    })
-    await worker.on('error', (err) => {
-      CONFIG.vercel.environment === 'production'
-        ? console.error(err)
-        : logger.error(err)
-    })
+  //   await worker.on('completed', (job) => {
+  //     CONFIG.vercel.environment === 'production'
+  //       ? console.log(`Job ID: ${job.id} is done!`)
+  //       : logger.info(`Job ID: ${job.id} is done!`)
+  //   })
+  //   await worker.on('active', (job) => {
+  //     CONFIG.vercel.environment === 'production'
+  //       ? console.log(`Job ID: ${job.id} is running!`)
+  //       : logger.info(`Job ID: ${job.id} is running!`)
+  //   })
+  //   await worker.on('error', (err) => {
+  //     CONFIG.vercel.environment === 'production'
+  //       ? console.error(err)
+  //       : logger.error(err)
+  //   })
 
-    await worker.on('failed', (job, err) => {
-      CONFIG.vercel.environment === 'production'
-        ? console.error(`${job?.id} has failed with ${err.message}`)
-        : logger.error(`${job?.id} has failed with ${err.message}`)
-    })
-    await worker.on('drained', async() => {
-      CONFIG.vercel.environment === 'production'
-        ? console.log(`No more jobs`)
-        : logger.info(`No more jobs`)
+  //   await worker.on('failed', (job, err) => {
+  //     CONFIG.vercel.environment === 'production'
+  //       ? console.error(`${job?.id} has failed with ${err.message}`)
+  //       : logger.error(`${job?.id} has failed with ${err.message}`)
+  //   })
+  //   await worker.on('drained', async() => {
+  //     CONFIG.vercel.environment === 'production'
+  //       ? console.log(`No more jobs`)
+  //       : logger.info(`No more jobs`)
 
-        await worker.close()
-    })
-  })
+  //       await worker.close()
+  //   })
+  // })
 
   return {
     statusCode: 200,

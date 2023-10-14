@@ -2,6 +2,8 @@
 // import { CONFIG } from "src/lib/constants"
 // import { logger } from "src/lib/logger"
 
+import { emailQueue } from "src/lib/email";
+
 // const axios = require('axios');
 
 // const worker = new Worker(
@@ -83,3 +85,8 @@
 //     console.error('Error sending email:', error);
 //   }
 // };
+
+
+emailQueue.addListener('waiting', (job) => {
+  console.log(`Job ${job.id} is waiting`)
+})
