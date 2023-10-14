@@ -48,9 +48,16 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
   console.log('HELLO WORLD')
   logger.info('HELLO WORLD')
 
-  // const jobs = await emailQueue.getJobs()
+  await emailQueue.getJobs().then(async(jobs) => {
+    let i = 0
 
-  await emailProcess()
+    while(i < jobs.length){
+      await emailProcess().then(_r => console.log(`Process ${jobs[i].id} Done!`))
+      await i++
+    }
+  })
+
+
 
   // await Promise.all(
   //   jobs.map(async(_j) => {
