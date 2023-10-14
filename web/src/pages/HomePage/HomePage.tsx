@@ -26,6 +26,18 @@ const HomePage = () => {
         }).catch(err => console.error(err))
 
       }}>Call function</button>
+
+      <button onClick={async() => {
+        await fetch(`${process.env.WEB_API_URL || '/.redwood/functions'}/hello`,
+          {
+            mode: 'no-cors'
+          }
+        ).then(async(_result) => {
+          console.log('Hello!')
+
+        }).catch(err => console.error(err))
+
+      }}>Get Jobs</button>
     </>
   )
 }
