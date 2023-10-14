@@ -67,10 +67,7 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       removeOnComplete: true,
     }
     },
-  ]
-
-
-  ).then(async(_r) => {
+  ]).then(async(_r) => {
     await emailQueue.getJobs(['delayed', 'waiting', 'active']).then(async(jobs) => {
       let i = 0
 
@@ -78,6 +75,7 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
         await emailProcess().then(async(_r) => {
           console.log(`Process ${jobs[i].id} Done!`)
           await jobs[i].moveToCompleted('Successfully completed!', true)
+          await jobs[i].takeLock()
           await jobs[i].releaseLock()
           await jobs[i].remove()
         })
