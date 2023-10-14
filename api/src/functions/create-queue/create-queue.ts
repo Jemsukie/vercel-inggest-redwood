@@ -21,8 +21,9 @@ import { emailQueue } from 'src/lib/email'
  */
 export const handler = async (event: APIGatewayEvent, context: Context) => {
   logger.info('Invoked createQueue function')
+  console.log('Invoked createQueue function')
 
-  emailQueue.add(
+  await emailQueue.add(
     'email',
     {
       tribeId: '1',
@@ -33,9 +34,9 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       origin: 'www.google.com',
     },
     {
-      // attempts: 5,
+      attempts: 5,
       // removeOnComplete: true,
-      // priority: 1,
+      priority: 1,
     }
   )
 
