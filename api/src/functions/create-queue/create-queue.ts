@@ -46,6 +46,7 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
         await emailProcess().then(async(_r) => {
           console.log(`Process ${jobs[i].id} Done!`)
           await jobs[i].moveToCompleted('Successfully completed!', true)
+          await jobs[i].releaseLock()
           await jobs[i].remove()
         })
         await i++
