@@ -87,6 +87,6 @@ import { emailQueue } from "src/lib/email";
 // };
 
 
-emailQueue.addListener('waiting', (job) => {
+await emailQueue.addListener('waiting', (job) => {
   console.log(`Job ${job.id} is waiting`)
 })
