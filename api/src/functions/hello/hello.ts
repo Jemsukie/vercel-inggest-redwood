@@ -1,6 +1,7 @@
 import type { APIGatewayEvent, Context } from 'aws-lambda'
 import { emailQueue } from 'src/lib/email'
 import { logger } from 'src/lib/logger'
+import { emailProcess } from '../auto-email'
 
 /**
  * The handler function is your code that processes http request events.
@@ -27,6 +28,12 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
   const jobs = await emailQueue.getJobs()
 
   console.log('--this is jobs', jobs)
+
+  await Promise.all(
+    jobs.map(_j => {
+      emailProcess()
+    })
+  ).then(_p => console.log('All jobs done')).catch(e => console.error(e.message))
 
 
   return {
