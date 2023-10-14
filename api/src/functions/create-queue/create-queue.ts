@@ -25,9 +25,10 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
   logger.info('Invoked createQueue function')
   console.log('Invoked createQueue function')
 
-  await emailQueue.add(
-    'email',
-    {
+  await emailQueue.addBulk(
+    [{
+      name: 'email',
+    data: {
       tribeId: '1',
       email: 'jemuel.lupo@gmail.com',
       name: 'Jemuel Lupo',
@@ -35,9 +36,40 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       batch: 'Batch  1',
       origin: 'www.google.com',
     },
-    {
+    opts: {
       removeOnComplete: true,
     }
+    },
+    {
+      name: 'email',
+    data: {
+      tribeId: '1',
+      email: 'jemuel.lupo@gmail.com',
+      name: 'Jemuel Lupo',
+      tempPassword: 'Password123!',
+      batch: 'Batch  1',
+      origin: 'www.google.com',
+    },
+    opts: {
+      removeOnComplete: true,
+    }
+    },{
+      name: 'email',
+    data: {
+      tribeId: '1',
+      email: 'jemuel.lupo@gmail.com',
+      name: 'Jemuel Lupo',
+      tempPassword: 'Password123!',
+      batch: 'Batch  1',
+      origin: 'www.google.com',
+    },
+    opts: {
+      removeOnComplete: true,
+    }
+    },
+  ]
+
+
   ).then(async(_r) => {
     await emailQueue.getJobs(['delayed', 'waiting', 'active']).then(async(jobs) => {
       let i = 0
