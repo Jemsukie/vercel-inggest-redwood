@@ -33,11 +33,6 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       batch: 'Batch  1',
       origin: 'www.google.com',
     },
-    {
-      attempts: 5,
-      // removeOnComplete: true,
-      priority: 1,
-    }
   )
 
   return {
