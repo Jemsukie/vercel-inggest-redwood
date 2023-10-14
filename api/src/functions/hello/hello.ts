@@ -48,13 +48,15 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
   console.log('HELLO WORLD')
   logger.info('HELLO WORLD')
 
-  const jobs = await emailQueue.getJobs()
+  // const jobs = await emailQueue.getJobs()
 
-  await Promise.all(
-    jobs.map(async(_j) => {
-       emailProcess()
-    })
-  ).then(_p => console.log('All jobs done')).catch(e => console.error(e.message))
+  await emailProcess()
+
+  // await Promise.all(
+  //   jobs.map(async(_j) => {
+  //      emailProcess()
+  //   })
+  // ).then(_p => console.log('All jobs done')).catch(e => console.error(e.message))
 
 
   return {
