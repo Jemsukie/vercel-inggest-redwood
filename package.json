@@ -4,7 +4,9 @@
     "build": "rw build",
     "dev": "concurrently --raw \"yarn:dev:*\"",
     "dev:rw": "rw dev",
-    "dev:inngest": "npx --yes inngest-cli@latest dev"
+    "dev:inngest": "npx --yes inngest-cli@latest dev",
+    "start.bullmq": "yarn workspace bullmq start",
+    "start.dev": "concurrently \"yarn rw dev\" \"yarn start.bullmq\""
   },
   "workspaces": {
     "packages": [

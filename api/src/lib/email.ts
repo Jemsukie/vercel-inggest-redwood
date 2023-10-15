@@ -9,22 +9,22 @@ const emailQueue = new Queue('email', {
   },
 })
 
-emailQueue.isReady().then(async (_res) => {
-  console.log('--EmailQueue is now Ready!')
+// emailQueue.isReady().then(async (_res) => {
+//   console.log('--EmailQueue is now Ready!')
 
-  emailQueue.process(async (job, done) => {
-    console.log(`Job ${job.id} is now in process!`)
+//   emailQueue.process(async (job, done) => {
+//     console.log(`Job ${job.id} is now in process!`)
 
-    done()
-  })
+//     done()
+//   })
 
-  emailQueue.on('waiting', (jobId) => {
-    console.log(`Job ${jobId} is now in waiting list!`)
-  })
+//   emailQueue.on('waiting', (jobId) => {
+//     console.log(`Job ${jobId} is now in waiting list!`)
+//   })
 
-  emailQueue.on('active', (job) => {
-    console.log(`Job ${job.id} is now in active!`)
-  })
-})
+//   emailQueue.on('active', (job) => {
+//     console.log(`Job ${job.id} is now in active!`)
+//   })
+// })
 
 export default emailQueue
