@@ -3,7 +3,7 @@ import type { APIGatewayEvent, Context } from 'aws-lambda'
 // import { Queue, Worker } from 'bullmq'
 
 import { CONFIG } from 'src/lib/constants'
-import { emailQueue } from 'src/lib/email'
+import emailQueue from 'src/lib/email'
 import { logger } from 'src/lib/logger'
 
 const axios = require('axios')
