@@ -42,9 +42,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
     },
   }
 
-  const bulkData = [data, data, data, data, data, data, data, data, data, data]
-
-  await emailQueue.addBulk([...bulkData, ...bulkData, ...bulkData])
+  await emailQueue.addBulk([data])
   // .then(async (_r) => {
   // await emailQueue.process('email', async (job, done) => {
   //   console.log(`Job ${job.id} is now processing!`)
