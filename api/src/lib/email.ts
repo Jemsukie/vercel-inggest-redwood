@@ -1,4 +1,4 @@
-import Queue from 'bull'
+import Queue, { Job } from 'bull'
 
 import { CONFIG } from './constants'
 
@@ -42,7 +42,7 @@ const emailProcess = async () => {
   }
 }
 
-const emailWorker = async () =>
+export const emailWorker = async () =>
   await emailQueue.process('email', async (job, done) => {
     console.log(`Job ${job.id} is now processing!`)
     await emailProcess().then((_r) => {
@@ -53,8 +53,17 @@ const emailWorker = async () =>
 
 emailWorker()
 
-emailQueue.on('waiting', (jobId) => {
+emailQueue.on('waiting', async (jobId) => {
   console.log(`Job ${jobId} is now in waiting list!`)
+
+  await emailProcess().then(async (_r) => {
+    console.log(`Process ${jobId} Done!`)
+    const job = await emailQueue.getJob(jobId)
+    await job?.takeLock()
+    await job?.moveToCompleted('Successfully completed!', true)
+    await job?.releaseLock()
+    await job?.remove()
+  })
 })
 
 emailQueue.on('active', (job) => {
