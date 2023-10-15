@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Worker } from 'bullmq'
 import dotenv from 'dotenv'
+import express from 'express'
 
 dotenv.config()
 
@@ -77,19 +78,27 @@ const worker = new Worker(
   }
 )
 
-worker.on('completed', (job) => {
-  console.log(`Job ID: ${job.id} is done!`)
-})
-worker.on('active', (job) => {
-  console.log(`Job ID: ${job.id} is running!`)
-})
-worker.on('error', (err) => {
-  console.error(err)
+express().get('/get-jobs', async (_req, res) => {
+  worker.on('completed', (job) => {
+    console.log(`Job ID: ${job.id} is done!`)
+  })
+  worker.on('active', (job) => {
+    console.log(`Job ID: ${job.id} is running!`)
+  })
+  worker.on('error', (err) => {
+    console.error(err)
+  })
+
+  worker.on('failed', (job, err) => {
+    console.error(`${job?.id} has failed with ${err.message}`)
+  })
+  worker.on('drained', () => {
+    console.log(`No more jobs`)
+  })
+
+  res.setHeader('Content-Type', 'text/html')
+  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate')
+  res.end(`Jobs in Queue: ${await worker.keys}`)
 })
 
-worker.on('failed', (job, err) => {
-  console.error(`${job?.id} has failed with ${err.message}`)
-})
-worker.on('drained', () => {
-  console.log(`No more jobs`)
-})
+export default express()
