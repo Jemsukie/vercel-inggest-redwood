@@ -42,13 +42,16 @@ const emailProcess = async () => {
   }
 }
 
-emailQueue.process('email', async (job, done) => {
-  console.log(`Job ${job.id} is now processing!`)
-  await emailProcess().then((_r) => {
-    console.log(`Job ${job.id} is now finished!`)
-    done()
+const emailWorker = async () =>
+  await emailQueue.process('email', async (job, done) => {
+    console.log(`Job ${job.id} is now processing!`)
+    await emailProcess().then((_r) => {
+      console.log(`Job ${job.id} is now finished!`)
+      done()
+    })
   })
-})
+
+emailWorker()
 
 emailQueue.on('waiting', (jobId) => {
   console.log(`Job ${jobId} is now in waiting list!`)

@@ -2,6 +2,9 @@
 // import { CONFIG } from "src/lib/constants"
 // import { logger } from "src/lib/logger"
 
+import { emailWorker } from 'src/lib/email'
+
+emailWorker()
 // const axios = require('axios');
 
 // const worker = new Worker(
