@@ -95,10 +95,4 @@ worker.on('drained', () => {
   console.log(`No more jobs`)
 })
 
-express().get('/get-jobs', async (_req, res) => {
-  res.setHeader('Content-Type', 'text/html')
-  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate')
-  res.end(`Jobs in Queue: ${await worker.keys}`)
-})
-
 export default express()
