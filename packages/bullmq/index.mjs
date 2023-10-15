@@ -89,5 +89,3 @@ worker.on('failed', (job, err) => {
 worker.on('drained', () => {
   console.log(`No more jobs`)
 })
-
-export default worker
