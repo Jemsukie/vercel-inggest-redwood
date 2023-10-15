@@ -27,84 +27,57 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   logger.info('Invoked createQueue function')
   console.log('Invoked createQueue function')
 
-  // await emailQueue.addBulk([
-  //   {
-  //     name: 'email',
-  //     data: {
-  //       tribeId: '1',
-  //       email: 'jemuel.lupo@gmail.com',
-  //       name: 'Jemuel Lupo',
-  //       tempPassword: 'Password123!',
-  //       batch: 'Batch  1',
-  //       origin: 'www.google.com',
-  //     },
-  //     opts: {
-  //       removeOnComplete: true,
-  //     },
-  //   },
-  //   {
-  //     name: 'email',
-  //     data: {
-  //       tribeId: '1',
-  //       email: 'jemuel.lupo@gmail.com',
-  //       name: 'Jemuel Lupo',
-  //       tempPassword: 'Password123!',
-  //       batch: 'Batch  1',
-  //       origin: 'www.google.com',
-  //     },
-  //     opts: {
-  //       removeOnComplete: true,
-  //     },
-  //   },
-  //   {
-  //     name: 'email',
-  //     data: {
-  //       tribeId: '1',
-  //       email: 'jemuel.lupo@gmail.com',
-  //       name: 'Jemuel Lupo',
-  //       tempPassword: 'Password123!',
-  //       batch: 'Batch  1',
-  //       origin: 'www.google.com',
-  //     },
-  //     opts: {
-  //       removeOnComplete: true,
-  //     },
-  //   },
-  // ])
-  // .then(async (_r) => {
-  //   // emailQueue.process('email', async (job, done) => {
-  //   //   console.log(`Job ${job.id} is now processing!`)
-  //   //   await emailProcess().then((_r) => {
-  //   //     console.log(`Job ${job.id} is now finished!`)
-  //   //     done()
-  //   //   })
-  //   // })
+  const data = {
+    name: 'email',
+    data: {
+      tribeId: '1',
+      email: 'jemuel.lupo@gmail.com',
+      name: 'Jemuel Lupo',
+      tempPassword: 'Password123!',
+      batch: 'Batch  1',
+      origin: 'www.google.com',
+    },
+    opts: {
+      removeOnComplete: true,
+    },
+  }
 
-  //   // emailQueue.on('waiting', (jobId) => {
-  //   //   console.log(`Job ${jobId} is now in waiting list!`)
-  //   // })
+  await emailQueue
+    .addBulk([data, data, data, data, data, data, data, data, data, data])
+    .then(async (_r) => {
+      await emailQueue.process('email', async (job, done) => {
+        console.log(`Job ${job.id} is now processing!`)
+        await emailProcess().then((_r) => {
+          console.log(`Job ${job.id} is now finished!`)
+          done()
+        })
+      })
 
-  //   // emailQueue.on('active', (job) => {
-  //   //   console.log(`Job ${job.id} is now in active!`)
-  //   // })
+      await emailQueue.on('waiting', (jobId) => {
+        console.log(`Job ${jobId} is now in waiting list!`)
+      })
 
-  //   // await emailQueue
-  //   //   .getJobs(['delayed', 'waiting', 'active'])
-  //   //   .then(async (jobs) => {
-  //   //     let i = 0
+      await emailQueue.on('active', (job) => {
+        console.log(`Job ${job.id} is now in active!`)
+      })
 
-  //   //     while (i < jobs.length) {
-  //   //       await emailProcess().then(async (_r) => {
-  //   //         console.log(`Process ${jobs[i].id} Done!`)
-  //   //         await jobs[i].takeLock()
-  //   //         await jobs[i].moveToCompleted('Successfully completed!', true)
-  //   //         await jobs[i].releaseLock()
-  //   //         await jobs[i].remove()
-  //   //       })
-  //   //       await i++
-  //   //     }
-  //   //   })
-  // })
+      //   // await emailQueue
+      //   //   .getJobs(['delayed', 'waiting', 'active'])
+      //   //   .then(async (jobs) => {
+      //   //     let i = 0
+
+      //   //     while (i < jobs.length) {
+      //   //       await emailProcess().then(async (_r) => {
+      //   //         console.log(`Process ${jobs[i].id} Done!`)
+      //   //         await jobs[i].takeLock()
+      //   //         await jobs[i].moveToCompleted('Successfully completed!', true)
+      //   //         await jobs[i].releaseLock()
+      //   //         await jobs[i].remove()
+      //   //       })
+      //   //       await i++
+      //   //     }
+      //   //   })
+    })
   // .then(async(_queue) => {
   //   const worker = await new Worker(
   //     'email',
