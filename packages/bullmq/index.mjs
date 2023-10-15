@@ -58,42 +58,38 @@ const emailProcess = async () => {
   }
 }
 
-const cubejsCronJob = async () => {
-  const worker = new Worker(
-    'email',
-    async (job) => {
-      const { id } = job
+const worker = new Worker(
+  'email',
+  async (job) => {
+    const { id } = job
 
-      console.log(`Job ID: ${id} is being processed!`)
+    console.log(`Job ID: ${id} is being processed!`)
 
-      await emailProcess()
+    await emailProcess()
+  },
+  {
+    removeOnComplete: {
+      age: 1,
+      count: 0,
     },
-    {
-      removeOnComplete: {
-        age: 1,
-        count: 0,
-      },
-      lockDuration: 30000,
-      connection: CONFIG.redis.jobQueueConnection,
-    }
-  )
+    lockDuration: 30000,
+    connection: CONFIG.redis.jobQueueConnection,
+  }
+)
 
-  worker.on('completed', (job) => {
-    console.log(`Job ID: ${job.id} is done!`)
-  })
-  worker.on('active', (job) => {
-    console.log(`Job ID: ${job.id} is running!`)
-  })
-  worker.on('error', (err) => {
-    console.error(err)
-  })
+worker.on('completed', (job) => {
+  console.log(`Job ID: ${job.id} is done!`)
+})
+worker.on('active', (job) => {
+  console.log(`Job ID: ${job.id} is running!`)
+})
+worker.on('error', (err) => {
+  console.error(err)
+})
 
-  worker.on('failed', (job, err) => {
-    console.error(`${job?.id} has failed with ${err.message}`)
-  })
-  worker.on('drained', () => {
-    console.log(`No more jobs`)
-  })
-}
-
-export default cubejsCronJob
+worker.on('failed', (job, err) => {
+  console.error(`${job?.id} has failed with ${err.message}`)
+})
+worker.on('drained', () => {
+  console.log(`No more jobs`)
+})
