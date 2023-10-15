@@ -1,7 +1,8 @@
 import type { APIGatewayEvent, Context } from 'aws-lambda'
-import { Worker } from 'bullmq'
+// import { Worker } from 'bullmq'
 
 import { CONFIG } from 'src/lib/constants'
+import { emailQueue } from 'src/lib/email'
 import { logger } from 'src/lib/logger'
 
 /**
@@ -23,55 +24,57 @@ import { logger } from 'src/lib/logger'
 export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   logger.info('Invoked processQueue function')
 
-  const worker = new Worker(
-    'email',
-    async (job) => {
-      const { id } = job
+  await addQueue()
 
-      CONFIG.vercel.environment === 'production'
-        ? console.log(`Job ID: ${id} is being processed!`)
-        : logger.info(`Job ID: ${id} is being processed!`)
+  // const worker = new Worker(
+  //   'email',
+  //   async (job) => {
+  //     const { id } = job
 
-      await emailProcess()
-    },
-    {
-      // removeOnComplete: {
-      //   age: 1,
-      //   count: 0,
-      // },
-      lockDuration: 30000,
-      connection: CONFIG.redis.jobQueueConnection,
-    }
-  )
+  //     CONFIG.vercel.environment === 'production'
+  //       ? console.log(`Job ID: ${id} is being processed!`)
+  //       : logger.info(`Job ID: ${id} is being processed!`)
 
-  await worker.on('completed', (job) => {
-    CONFIG.vercel.environment === 'production'
-      ? console.log(`Job ID: ${job.id} is done!`)
-      : logger.info(`Job ID: ${job.id} is done!`)
-  })
-  await worker.on('active', (job) => {
-    CONFIG.vercel.environment === 'production'
-      ? console.log(`Job ID: ${job.id} is running!`)
-      : logger.info(`Job ID: ${job.id} is running!`)
-  })
-  await worker.on('error', (err) => {
-    CONFIG.vercel.environment === 'production'
-      ? console.error(err)
-      : logger.error(err)
-  })
+  //     await emailProcess()
+  //   },
+  //   {
+  //     // removeOnComplete: {
+  //     //   age: 1,
+  //     //   count: 0,
+  //     // },
+  //     lockDuration: 30000,
+  //     connection: CONFIG.redis.jobQueueConnection,
+  //   }
+  // )
 
-  await worker.on('failed', (job, err) => {
-    CONFIG.vercel.environment === 'production'
-      ? console.error(`${job?.id} has failed with ${err.message}`)
-      : logger.error(`${job?.id} has failed with ${err.message}`)
-  })
-  await worker.on('drained', async () => {
-    CONFIG.vercel.environment === 'production'
-      ? console.log(`No more jobs`)
-      : logger.info(`No more jobs`)
+  // await worker.on('completed', (job) => {
+  //   CONFIG.vercel.environment === 'production'
+  //     ? console.log(`Job ID: ${job.id} is done!`)
+  //     : logger.info(`Job ID: ${job.id} is done!`)
+  // })
+  // await worker.on('active', (job) => {
+  //   CONFIG.vercel.environment === 'production'
+  //     ? console.log(`Job ID: ${job.id} is running!`)
+  //     : logger.info(`Job ID: ${job.id} is running!`)
+  // })
+  // await worker.on('error', (err) => {
+  //   CONFIG.vercel.environment === 'production'
+  //     ? console.error(err)
+  //     : logger.error(err)
+  // })
 
-    await worker.close()
-  })
+  // await worker.on('failed', (job, err) => {
+  //   CONFIG.vercel.environment === 'production'
+  //     ? console.error(`${job?.id} has failed with ${err.message}`)
+  //     : logger.error(`${job?.id} has failed with ${err.message}`)
+  // })
+  // await worker.on('drained', async () => {
+  //   CONFIG.vercel.environment === 'production'
+  //     ? console.log(`No more jobs`)
+  //     : logger.info(`No more jobs`)
+
+  //   await worker.close()
+  // })
 
   return {
     statusCode: 200,
@@ -84,7 +87,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   }
 }
 
-const emailProcess = async () => {
+const _emailProcess = async () => {
   await fetch('https://api.brevo.com/v3/smtp/email', {
     // TODO, merge options.headers if exist
     headers: {
@@ -107,4 +110,51 @@ const emailProcess = async () => {
       subject: 'Testing this part',
     }),
   })
+}
+
+const addQueue = async () => {
+  await emailQueue.addBulk([
+    {
+      name: 'email',
+      data: {
+        tribeId: '1',
+        email: 'jemuel.lupo@gmail.com',
+        name: 'Jemuel Lupo',
+        tempPassword: 'Password123!',
+        batch: 'Batch  1',
+        origin: 'www.google.com',
+      },
+      opts: {
+        removeOnComplete: true,
+      },
+    },
+    {
+      name: 'email',
+      data: {
+        tribeId: '1',
+        email: 'jemuel.lupo@gmail.com',
+        name: 'Jemuel Lupo',
+        tempPassword: 'Password123!',
+        batch: 'Batch  1',
+        origin: 'www.google.com',
+      },
+      opts: {
+        removeOnComplete: true,
+      },
+    },
+    {
+      name: 'email',
+      data: {
+        tribeId: '1',
+        email: 'jemuel.lupo@gmail.com',
+        name: 'Jemuel Lupo',
+        tempPassword: 'Password123!',
+        batch: 'Batch  1',
+        origin: 'www.google.com',
+      },
+      opts: {
+        removeOnComplete: true,
+      },
+    },
+  ])
 }

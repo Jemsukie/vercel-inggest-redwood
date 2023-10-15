@@ -27,51 +27,50 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   logger.info('Invoked createQueue function')
   console.log('Invoked createQueue function')
 
-  // processEmails()
-  await emailQueue.addBulk([
-    {
-      name: 'email',
-      data: {
-        tribeId: '1',
-        email: 'jemuel.lupo@gmail.com',
-        name: 'Jemuel Lupo',
-        tempPassword: 'Password123!',
-        batch: 'Batch  1',
-        origin: 'www.google.com',
-      },
-      opts: {
-        removeOnComplete: true,
-      },
-    },
-    {
-      name: 'email',
-      data: {
-        tribeId: '1',
-        email: 'jemuel.lupo@gmail.com',
-        name: 'Jemuel Lupo',
-        tempPassword: 'Password123!',
-        batch: 'Batch  1',
-        origin: 'www.google.com',
-      },
-      opts: {
-        removeOnComplete: true,
-      },
-    },
-    {
-      name: 'email',
-      data: {
-        tribeId: '1',
-        email: 'jemuel.lupo@gmail.com',
-        name: 'Jemuel Lupo',
-        tempPassword: 'Password123!',
-        batch: 'Batch  1',
-        origin: 'www.google.com',
-      },
-      opts: {
-        removeOnComplete: true,
-      },
-    },
-  ])
+  // await emailQueue.addBulk([
+  //   {
+  //     name: 'email',
+  //     data: {
+  //       tribeId: '1',
+  //       email: 'jemuel.lupo@gmail.com',
+  //       name: 'Jemuel Lupo',
+  //       tempPassword: 'Password123!',
+  //       batch: 'Batch  1',
+  //       origin: 'www.google.com',
+  //     },
+  //     opts: {
+  //       removeOnComplete: true,
+  //     },
+  //   },
+  //   {
+  //     name: 'email',
+  //     data: {
+  //       tribeId: '1',
+  //       email: 'jemuel.lupo@gmail.com',
+  //       name: 'Jemuel Lupo',
+  //       tempPassword: 'Password123!',
+  //       batch: 'Batch  1',
+  //       origin: 'www.google.com',
+  //     },
+  //     opts: {
+  //       removeOnComplete: true,
+  //     },
+  //   },
+  //   {
+  //     name: 'email',
+  //     data: {
+  //       tribeId: '1',
+  //       email: 'jemuel.lupo@gmail.com',
+  //       name: 'Jemuel Lupo',
+  //       tempPassword: 'Password123!',
+  //       batch: 'Batch  1',
+  //       origin: 'www.google.com',
+  //     },
+  //     opts: {
+  //       removeOnComplete: true,
+  //     },
+  //   },
+  // ])
   // .then(async (_r) => {
   //   // emailQueue.process('email', async (job, done) => {
   //   //   console.log(`Job ${job.id} is now processing!`)
@@ -154,6 +153,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   //   })
   // })
 
+  await processEmails()
   return {
     statusCode: 200,
     headers: {
@@ -165,7 +165,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   }
 }
 
-const _processEmails = async () => {
+const processEmails = async () => {
   console.log(`Let's run processEmails queue`)
 
   await emailQueue.process('email', async (job, done) => {
