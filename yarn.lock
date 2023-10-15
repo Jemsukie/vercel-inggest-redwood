@@ -17462,6 +17462,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-cron@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "node-cron@npm:3.0.2"
+  dependencies:
+    uuid: 8.3.2
+  checksum: 9b67d817ec5cb373a7b5676b5984b1c9624b40765d939cb3e7072f5c7ed6133100cf90824118ddc87edc25b632d4457b3843384cbf323a35562634b0a8343c05
+  languageName: node
+  linkType: hard
+
 "node-dir@npm:^0.1.10":
   version: 0.1.17
   resolution: "node-dir@npm:0.1.17"
@@ -20536,6 +20545,7 @@ __metadata:
     "@redwoodjs/core": 3.2.0
     bullmq: ^4.12.4
     concurrently: 7.6.0
+    node-cron: ^3.0.2
   languageName: unknown
   linkType: soft
 

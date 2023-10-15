@@ -30,6 +30,7 @@
   },
   "packageManager": "yarn@3.2.3",
   "dependencies": {
-    "bullmq": "^4.12.4"
+    "bullmq": "^4.12.4",
+    "node-cron": "^3.0.2"
   }
 }
