@@ -1,0 +1,16 @@
+{
+  "builds": [
+    {
+      "src": "vercel-cron.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/_vercel-cron",
+      "dest": "/vercel-cron.js",
+      "methods": ["POST"]
+    }
+  ],
+  "version": 2
+}
