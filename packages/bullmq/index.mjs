@@ -58,7 +58,11 @@ const emailProcess = async () => {
   }
 }
 
-export const worker = new Worker(
+export default async () => {
+  console.log('Running worker server')
+}
+
+const worker = new Worker(
   'email',
   async (job) => {
     const { id } = job
@@ -72,7 +76,7 @@ export const worker = new Worker(
       age: 1,
       count: 0,
     },
-    lockDuration: 30000,
+    lockDuration: 3600000,
     connection: CONFIG.redis.jobQueueConnection,
   }
 )
