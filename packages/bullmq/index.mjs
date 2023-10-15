@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Worker } from 'bullmq'
 import dotenv from 'dotenv'
 import express from 'express'
+import { v4 } from 'uuid'
 
 dotenv.config()
 
@@ -93,6 +94,18 @@ worker.on('failed', (job, err) => {
 })
 worker.on('drained', () => {
   console.log(`No more jobs`)
+})
+
+express().get('/api', (req, res) => {
+  const path = `/api/item/${v4()}`
+  res.setHeader('Content-Type', 'text/html')
+  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate')
+  res.end(`Hello! Go to item: <a href="${path}">${path}</a>`)
+})
+
+express().get('/api/item/:slug', (req, res) => {
+  const { slug } = req.params
+  res.end(`Item: ${slug}`)
 })
 
 module.exports = express()
