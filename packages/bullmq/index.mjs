@@ -24,7 +24,7 @@ const CONFIG = {
   },
 }
 
-export const emailProcess = async () => {
+const emailProcess = async () => {
   try {
     const response = await axios.post(
       'https://api.brevo.com/v3/smtp/email',
@@ -58,7 +58,7 @@ export const emailProcess = async () => {
   }
 }
 
-const worker = new Worker(
+export default new Worker(
   'email',
   async (job) => {
     const { id } = job
@@ -76,20 +76,3 @@ const worker = new Worker(
     connection: CONFIG.redis.jobQueueConnection,
   }
 )
-
-worker.on('completed', (job) => {
-  console.log(`Job ID: ${job.id} is done!`)
-})
-worker.on('active', (job) => {
-  console.log(`Job ID: ${job.id} is running!`)
-})
-worker.on('error', (err) => {
-  console.error(err)
-})
-
-worker.on('failed', (job, err) => {
-  console.error(`${job?.id} has failed with ${err.message}`)
-})
-worker.on('drained', () => {
-  console.log(`No more jobs`)
-})
