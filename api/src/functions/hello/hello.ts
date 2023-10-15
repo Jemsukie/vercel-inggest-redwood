@@ -54,27 +54,38 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   console.log('HELLO WORLD')
   logger.info('HELLO WORLD')
 
-  await emailQueue.process('email', async (job, done) => {
-    console.log(`Job ${job.id} is now processing!`)
-    await emailProcess().then((_r) => {
-      console.log(`Job ${job.id} is now finished!`)
-      done()
-    })
-  })
-
-  // await emailQueue
-  //   .getJobs(['delayed', 'waiting', 'active'])
-  //   .then(async (jobs) => {
-  //     let i = 0
-
-  //     while (i < jobs.length) {
-  //       await emailProcess().then(async (_r) => {
-  //         console.log(`Process ${jobs[i].id} Done!`)
-  //         await jobs[i].moveToCompleted('Successfully completed!', true)
-  //       })
-  //       await i++
-  //     }
+  // await emailQueue.process('email', async (job, done) => {
+  //   console.log(`Job ${job.id} is now processing!`)
+  //   await emailProcess().then((_r) => {
+  //     console.log(`Job ${job.id} is now finished!`)
+  //     done()
   //   })
+  // })
+
+  await emailQueue
+    .getJobs(['delayed', 'waiting', 'active'])
+    .then(async (jobs) => {
+      await Promise.all(
+        jobs.map(async (job) => {
+          await emailProcess().then(async (_r) => {
+            console.log(`Process ${job.id} Done!`)
+            await job.moveToCompleted('Successfully completed!', true)
+          })
+        })
+      )
+        .then((_p) => console.log('All jobs done'))
+        .catch((e) => console.error(e.message))
+
+      // let i = 0
+
+      // while (i < jobs.length) {
+      //   await emailProcess().then(async (_r) => {
+      //     console.log(`Process ${jobs[i].id} Done!`)
+      //     await jobs[i].moveToCompleted('Successfully completed!', true)
+      //   })
+      //   await i++
+      // }
+    })
 
   // await Promise.all(
   //   jobs.map(async(_j) => {
