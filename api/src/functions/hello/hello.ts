@@ -72,9 +72,8 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
             await job
               .moveToCompleted('Successfully completed!', true)
               .then(async (_r) => {
-                if (await job.isActive()) {
-                  await job.releaseLock()
-                }
+                await job.takeLock()
+                await job.releaseLock()
                 await job.remove()
               })
           })

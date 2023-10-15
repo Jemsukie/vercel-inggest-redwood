@@ -2,7 +2,13 @@
 // import { CONFIG } from "src/lib/constants"
 // import { logger } from "src/lib/logger"
 
+import { emailQueue } from 'src/lib/email'
+
 // const axios = require('axios');
+
+emailQueue.isReady().then((_res) => {
+  console.log('--EmailQueue is now Ready!')
+})
 
 // const worker = new Worker(
 //   'email',
