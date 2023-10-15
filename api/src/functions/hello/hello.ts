@@ -1,10 +1,10 @@
 import type { APIGatewayEvent, Context } from 'aws-lambda'
 
-import { CONFIG } from 'src/lib/constants'
-import { emailQueue } from 'src/lib/email'
+// import { CONFIG } from 'src/lib/constants'
+// import { emailQueue } from 'src/lib/email'
 import { logger } from 'src/lib/logger'
 
-const axios = require('axios')
+// const axios = require('axios')
 /**
  * The handler function is your code that processes http request events.
  * You can use return and throw to send a response or error, respectively.
@@ -22,31 +22,31 @@ const axios = require('axios')
  * function, and execution environment.
  */
 
-const emailProcess = async () => {
-  return await axios.post(
-    'https://api.brevo.com/v3/smtp/email',
-    {
-      sender: {
-        name: `"Atlas Admin" <${CONFIG.brevo.senderEmail}>`,
-        email: CONFIG.brevo.tempSenderEmail,
-      },
-      to: [
-        {
-          email: 'jemuel.lupo@gmail.com',
-          name: 'Dev Testing',
-        },
-      ],
-      htmlContent: 'Hello, this is testing',
-      subject: 'Testing this part',
-    },
-    {
-      headers: {
-        accept: 'application/json',
-        'api-key': CONFIG.brevo.apiKey,
-      },
-    }
-  )
-}
+// const emailProcess = async () => {
+//   return await axios.post(
+//     'https://api.brevo.com/v3/smtp/email',
+//     {
+//       sender: {
+//         name: `"Atlas Admin" <${CONFIG.brevo.senderEmail}>`,
+//         email: CONFIG.brevo.tempSenderEmail,
+//       },
+//       to: [
+//         {
+//           email: 'jemuel.lupo@gmail.com',
+//           name: 'Dev Testing',
+//         },
+//       ],
+//       htmlContent: 'Hello, this is testing',
+//       subject: 'Testing this part',
+//     },
+//     {
+//       headers: {
+//         accept: 'application/json',
+//         'api-key': CONFIG.brevo.apiKey,
+//       },
+//     }
+//   )
+// }
 
 export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   logger.info('Invoked hello function')
@@ -54,19 +54,19 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   console.log('HELLO WORLD')
   logger.info('HELLO WORLD')
 
-  await emailQueue
-    .getJobs(['delayed', 'waiting', 'active'])
-    .then(async (jobs) => {
-      let i = 0
+  // await emailQueue
+  //   .getJobs(['delayed', 'waiting', 'active'])
+  //   .then(async (jobs) => {
+  //     let i = 0
 
-      while (i < jobs.length) {
-        await emailProcess().then(async (_r) => {
-          console.log(`Process ${jobs[i].id} Done!`)
-          await jobs[i].moveToCompleted('Successfully completed!', true)
-        })
-        await i++
-      }
-    })
+  //     while (i < jobs.length) {
+  //       await emailProcess().then(async (_r) => {
+  //         console.log(`Process ${jobs[i].id} Done!`)
+  //         await jobs[i].moveToCompleted('Successfully completed!', true)
+  //       })
+  //       await i++
+  //     }
+  //   })
 
   // await Promise.all(
   //   jobs.map(async(_j) => {

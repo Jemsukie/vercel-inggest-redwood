@@ -1,8 +1,8 @@
 import type { APIGatewayEvent, Context } from 'aws-lambda'
-import { logger } from 'src/lib/logger'
-
 import { Worker } from 'bullmq'
+
 import { CONFIG } from 'src/lib/constants'
+import { logger } from 'src/lib/logger'
 
 /**
  * The handler function is your code that processes http request events.
@@ -20,13 +20,13 @@ import { CONFIG } from 'src/lib/constants'
  * @param { Context } context - contains information about the invocation,
  * function, and execution environment.
  */
-export const handler = async (event: APIGatewayEvent, context: Context) => {
+export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   logger.info('Invoked processQueue function')
 
   const worker = new Worker(
     'email',
     async (job) => {
-      const { id, data } = job
+      const { id } = job
 
       CONFIG.vercel.environment === 'production'
         ? console.log(`Job ID: ${id} is being processed!`)
@@ -70,7 +70,7 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
       ? console.log(`No more jobs`)
       : logger.info(`No more jobs`)
 
-      worker.close()
+    worker.close()
   })
 
   return {
@@ -84,7 +84,7 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
   }
 }
 
-const emailProcess = async() => {
+const emailProcess = async () => {
   await fetch('https://api.brevo.com/v3/smtp/email', {
     // TODO, merge options.headers if exist
     headers: {

@@ -1,9 +1,13 @@
-import { Worker } from 'bullmq'
+import { Worker, Queue } from 'bullmq'
 
 import { CONFIG } from 'src/lib/constants'
 import { logger } from 'src/lib/logger'
 
 const axios = require('axios')
+
+export const emailQueue = new Queue('email', {
+  connection: CONFIG.redis.jobQueueConnection,
+})
 
 const worker = new Worker(
   'email',
