@@ -24,7 +24,7 @@ const CONFIG = {
   },
 }
 
-const emailProcess = async () => {
+export const emailProcess = async () => {
   try {
     const response = await axios.post(
       'https://api.brevo.com/v3/smtp/email',
@@ -56,10 +56,6 @@ const emailProcess = async () => {
     // Handle errors here
     console.error('Error sending email:', error)
   }
-}
-
-export default async () => {
-  console.log('Running worker server')
 }
 
 const worker = new Worker(
