@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Worker } from 'bullmq'
+import Queue from 'bull'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -58,21 +58,63 @@ const emailProcess = async () => {
   }
 }
 
-export default new Worker(
-  'email',
-  async (job) => {
-    const { id } = job
-
-    console.log(`Job ID: ${id} is being processed!`)
-
-    await emailProcess()
-  },
-  {
-    removeOnComplete: {
-      age: 1,
-      count: 0,
-    },
+const emailQueue = new Queue('email', {
+  redis: CONFIG.redis.jobQueueConnection,
+  settings: {
     lockDuration: 3600000,
-    connection: CONFIG.redis.jobQueueConnection,
-  }
-)
+  },
+})
+
+emailQueue.process('email', async (job, done) => {
+  console.log(`Job ${job.id} is now processing!`)
+  emailProcess().then((_r) => {
+    console.log(`Job ${job.id} is now finished!`)
+    done()
+  })
+})
+
+emailQueue.on('waiting', (jobId) => {
+  console.log(`Job ${jobId} is now in waiting list!`)
+})
+
+emailQueue.on('active', (job) => {
+  console.log(`Job ${job.id} is now in active!`)
+})
+
+export default emailQueue
+
+// const worker = new Worker(
+//   'email',
+//   async (job) => {
+//     const { id } = job
+
+//     console.log(`Job ID: ${id} is being processed!`)
+
+//     await emailProcess()
+//   },
+//   {
+//     removeOnComplete: {
+//       age: 1,
+//       count: 0,
+//     },
+//     lockDuration: 3600000,
+//     connection: CONFIG.redis.jobQueueConnection,
+//   }
+// )
+
+// worker.on('completed', (job) => {
+//   console.log(`Job ID: ${job.id} is done!`)
+// })
+// worker.on('active', (job) => {
+//   console.log(`Job ID: ${job.id} is running!`)
+// })
+// worker.on('error', (err) => {
+//   console.error(err)
+// })
+
+// worker.on('failed', (job, err) => {
+//   console.error(`${job?.id} has failed with ${err.message}`)
+// })
+// worker.on('drained', () => {
+//   console.log(`No more jobs`)
+// })
