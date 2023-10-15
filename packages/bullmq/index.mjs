@@ -2,6 +2,8 @@ import axios from 'axios'
 import Queue from 'bull'
 import dotenv from 'dotenv'
 
+const app = require('express')()
+
 dotenv.config()
 
 const CONFIG = {
@@ -81,7 +83,7 @@ emailQueue.on('active', (job) => {
   console.log(`Job ${job.id} is now in active!`)
 })
 
-export default emailQueue
+module.exports = app
 
 // const worker = new Worker(
 //   'email',
