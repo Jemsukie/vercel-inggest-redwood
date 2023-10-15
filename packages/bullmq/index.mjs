@@ -1,9 +1,5 @@
 import axios from 'axios'
-import Queue from 'bull'
-import dotenv from 'dotenv'
-import express from 'express'
-
-dotenv.config()
+import { Worker } from 'bullmq'
 
 const CONFIG = {
   redis: {
@@ -59,70 +55,37 @@ const emailProcess = async () => {
   }
 }
 
-const emailQueue = new Queue('email', {
-  redis: CONFIG.redis.jobQueueConnection,
-  settings: {
-    lockDuration: 3600000,
+const worker = new Worker(
+  'email',
+  async (job) => {
+    const { id } = job
+
+    console.log(`Job ID: ${id} is being processed!`)
+
+    await emailProcess()
   },
+  {
+    removeOnComplete: {
+      age: 1,
+      count: 0,
+    },
+    lockDuration: 30000,
+    connection: CONFIG.redis.jobQueueConnection,
+  }
+)
+
+worker.on('completed', (job) => {
+  console.log(`Job ID: ${job.id} is done!`)
 })
-
-emailQueue.on('waiting', (jobId) => {
-  console.log(`Job ${jobId} is now in waiting list!`)
+worker.on('active', (job) => {
+  console.log(`Job ID: ${job.id} is running!`)
 })
-
-emailQueue.on('active', (job) => {
-  console.log(`Job ${job.id} is now in active!`)
+worker.on('error', (err) => {
+  console.error(err)
 })
-
-express().get('/', async (_req, res) => {
-  await emailQueue.process('email', async (job, done) => {
-    console.log(`Job ${job.id} is now processing!`)
-    emailProcess().then((_r) => {
-      console.log(`Job ${job.id} is now finished!`)
-      done()
-    })
-  })
-
-  await res.setHeader('Content-Type', 'text/html')
-  await res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate')
-
-  await res.end(`Jobs in Queue: ${await emailQueue.getJobCounts()}`)
+worker.on('failed', (job, err) => {
+  console.error(`${job?.id} has failed with ${err.message}`)
 })
-
-export default express()
-
-// const worker = new Worker(
-//   'email',
-//   async (job) => {
-//     const { id } = job
-
-//     console.log(`Job ID: ${id} is being processed!`)
-
-//     await emailProcess()
-//   },
-//   {
-//     removeOnComplete: {
-//       age: 1,
-//       count: 0,
-//     },
-//     lockDuration: 3600000,
-//     connection: CONFIG.redis.jobQueueConnection,
-//   }
-// )
-
-// worker.on('completed', (job) => {
-//   console.log(`Job ID: ${job.id} is done!`)
-// })
-// worker.on('active', (job) => {
-//   console.log(`Job ID: ${job.id} is running!`)
-// })
-// worker.on('error', (err) => {
-//   console.error(err)
-// })
-
-// worker.on('failed', (job, err) => {
-//   console.error(`${job?.id} has failed with ${err.message}`)
-// })
-// worker.on('drained', () => {
-//   console.log(`No more jobs`)
-// })
+worker.on('drained', () => {
+  console.log(`No more jobs`)
+})
