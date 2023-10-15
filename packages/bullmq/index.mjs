@@ -108,4 +108,4 @@ express().get('/api/item/:slug', (req, res) => {
   res.end(`Item: ${slug}`)
 })
 
-module.exports = express()
+export default express()
