@@ -42,42 +42,52 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
     },
   }
 
-  await emailQueue
-    .addBulk([data, data, data, data, data, data, data, data, data, data])
-    .then(async (_r) => {
-      await emailQueue.process('email', async (job, done) => {
-        console.log(`Job ${job.id} is now processing!`)
-        await emailProcess().then((_r) => {
-          console.log(`Job ${job.id} is now finished!`)
-          done()
-        })
-      })
+  await emailQueue.addBulk([
+    data,
+    data,
+    data,
+    data,
+    data,
+    data,
+    data,
+    data,
+    data,
+    data,
+  ])
+  // .then(async (_r) => {
+  // await emailQueue.process('email', async (job, done) => {
+  //   console.log(`Job ${job.id} is now processing!`)
+  //   await emailProcess().then((_r) => {
+  //     console.log(`Job ${job.id} is now finished!`)
+  //     done()
+  //   })
+  // })
 
-      await emailQueue.on('waiting', (jobId) => {
-        console.log(`Job ${jobId} is now in waiting list!`)
-      })
+  // await emailQueue.on('waiting', (jobId) => {
+  //   console.log(`Job ${jobId} is now in waiting list!`)
+  // })
 
-      await emailQueue.on('active', (job) => {
-        console.log(`Job ${job.id} is now in active!`)
-      })
+  // await emailQueue.on('active', (job) => {
+  //   console.log(`Job ${job.id} is now in active!`)
+  // })
 
-      //   // await emailQueue
-      //   //   .getJobs(['delayed', 'waiting', 'active'])
-      //   //   .then(async (jobs) => {
-      //   //     let i = 0
+  //   // await emailQueue
+  //   //   .getJobs(['delayed', 'waiting', 'active'])
+  //   //   .then(async (jobs) => {
+  //   //     let i = 0
 
-      //   //     while (i < jobs.length) {
-      //   //       await emailProcess().then(async (_r) => {
-      //   //         console.log(`Process ${jobs[i].id} Done!`)
-      //   //         await jobs[i].takeLock()
-      //   //         await jobs[i].moveToCompleted('Successfully completed!', true)
-      //   //         await jobs[i].releaseLock()
-      //   //         await jobs[i].remove()
-      //   //       })
-      //   //       await i++
-      //   //     }
-      //   //   })
-    })
+  //   //     while (i < jobs.length) {
+  //   //       await emailProcess().then(async (_r) => {
+  //   //         console.log(`Process ${jobs[i].id} Done!`)
+  //   //         await jobs[i].takeLock()
+  //   //         await jobs[i].moveToCompleted('Successfully completed!', true)
+  //   //         await jobs[i].releaseLock()
+  //   //         await jobs[i].remove()
+  //   //       })
+  //   //       await i++
+  //   //     }
+  //   //   })
+  // })
   // .then(async(_queue) => {
   //   const worker = await new Worker(
   //     'email',
@@ -126,7 +136,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   //   })
   // })
 
-  await processEmails()
+  // await processEmails()
   return {
     statusCode: 200,
     headers: {
@@ -138,7 +148,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   }
 }
 
-const processEmails = async () => {
+const _processEmails = async () => {
   console.log(`Let's run processEmails queue`)
 
   await emailQueue.process('email', async (job, done) => {
