@@ -69,7 +69,10 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
         jobs.map(async (job) => {
           await emailProcess().then(async (_r) => {
             console.log(`Process ${job.id} Done!`)
+            await job.takeLock()
             await job.moveToCompleted('Successfully completed!', true)
+            await job.releaseLock()
+            await job.remove()
           })
         })
       )
