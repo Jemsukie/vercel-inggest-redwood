@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Worker } from 'bullmq'
+import Queue from 'bull'
 import dotenv from 'dotenv'
 import express from 'express'
 
@@ -59,46 +59,70 @@ const emailProcess = async () => {
   }
 }
 
-const worker = new Worker(
-  'email',
-  async (job) => {
-    const { id } = job
-
-    console.log(`Job ID: ${id} is being processed!`)
-
-    await emailProcess()
-  },
-  {
-    removeOnComplete: {
-      age: 1,
-      count: 0,
-    },
+const emailQueue = new Queue('email', {
+  redis: CONFIG.redis.jobQueueConnection,
+  settings: {
     lockDuration: 3600000,
-    connection: CONFIG.redis.jobQueueConnection,
-  }
-)
+  },
+})
 
-express().get('/get-jobs', async (_req, res) => {
-  worker.on('completed', (job) => {
-    console.log(`Job ID: ${job.id} is done!`)
-  })
-  worker.on('active', (job) => {
-    console.log(`Job ID: ${job.id} is running!`)
-  })
-  worker.on('error', (err) => {
-    console.error(err)
-  })
+emailQueue.on('waiting', (jobId) => {
+  console.log(`Job ${jobId} is now in waiting list!`)
+})
 
-  worker.on('failed', (job, err) => {
-    console.error(`${job?.id} has failed with ${err.message}`)
-  })
-  worker.on('drained', () => {
-    console.log(`No more jobs`)
+emailQueue.on('active', (job) => {
+  console.log(`Job ${job.id} is now in active!`)
+})
+
+express().get('/', async (_req, res) => {
+  await emailQueue.process('email', async (job, done) => {
+    console.log(`Job ${job.id} is now processing!`)
+    emailProcess().then((_r) => {
+      console.log(`Job ${job.id} is now finished!`)
+      done()
+    })
   })
 
   res.setHeader('Content-Type', 'text/html')
   res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate')
-  res.end(`Jobs in Queue: ${await worker.keys}`)
+
+  res.end(`Jobs in Queue: ${await emailQueue.getJobCounts()}`)
 })
 
 export default express()
+
+// const worker = new Worker(
+//   'email',
+//   async (job) => {
+//     const { id } = job
+
+//     console.log(`Job ID: ${id} is being processed!`)
+
+//     await emailProcess()
+//   },
+//   {
+//     removeOnComplete: {
+//       age: 1,
+//       count: 0,
+//     },
+//     lockDuration: 3600000,
+//     connection: CONFIG.redis.jobQueueConnection,
+//   }
+// )
+
+// worker.on('completed', (job) => {
+//   console.log(`Job ID: ${job.id} is done!`)
+// })
+// worker.on('active', (job) => {
+//   console.log(`Job ID: ${job.id} is running!`)
+// })
+// worker.on('error', (err) => {
+//   console.error(err)
+// })
+
+// worker.on('failed', (job, err) => {
+//   console.error(`${job?.id} has failed with ${err.message}`)
+// })
+// worker.on('drained', () => {
+//   console.log(`No more jobs`)
+// })
