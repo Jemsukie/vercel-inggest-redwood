@@ -74,24 +74,20 @@ emailQueue.on('active', (job) => {
   console.log(`Job ${job.id} is now in active!`)
 })
 
-express()
-  .get('/', async (_req, res) => {
-    res.setHeader('Content-Type', 'text/html')
-    res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate')
-
-    res.end(`Jobs in Queue: ${await emailQueue.getJobCounts()}`)
-  })
-  .then(async (res) => {
-    await emailQueue.process('email', async (job, done) => {
-      console.log(`Job ${job.id} is now processing!`)
-      emailProcess().then((_r) => {
-        console.log(`Job ${job.id} is now finished!`)
-        done()
-      })
+express().get('/', async (_req, res) => {
+  await emailQueue.process('email', async (job, done) => {
+    console.log(`Job ${job.id} is now processing!`)
+    emailProcess().then((_r) => {
+      console.log(`Job ${job.id} is now finished!`)
+      done()
     })
-
-    return await res
   })
+
+  await res.setHeader('Content-Type', 'text/html')
+  await res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate')
+
+  await res.end(`Jobs in Queue: ${await emailQueue.getJobCounts()}`)
+})
 
 export default express()
 
