@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { Worker } from 'bullmq'
 import dotenv from 'dotenv'
-import express from 'express'
 
 dotenv.config()
 
@@ -94,5 +93,3 @@ worker.on('failed', (job, err) => {
 worker.on('drained', () => {
   console.log(`No more jobs`)
 })
-
-export default express()
