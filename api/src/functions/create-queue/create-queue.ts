@@ -1,10 +1,10 @@
 import type { APIGatewayEvent, Context } from 'aws-lambda'
+
 // import { Queue, Worker } from 'bullmq'
 
 // import { CONFIG } from 'src/lib/constants'
+import { emailQueue } from 'src/lib/email'
 import { logger } from 'src/lib/logger'
-
-import { emailQueue } from '../auto-email'
 
 // const axios = require('axios')
 /**
@@ -27,66 +27,85 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   logger.info('Invoked createQueue function')
   console.log('Invoked createQueue function')
 
-  await emailQueue.addBulk([
-    {
-      name: 'email',
-      data: {
-        tribeId: '1',
-        email: 'jemuel.lupo@gmail.com',
-        name: 'Jemuel Lupo',
-        tempPassword: 'Password123!',
-        batch: 'Batch  1',
-        origin: 'www.google.com',
+  await emailQueue
+    .addBulk([
+      {
+        name: 'email',
+        data: {
+          tribeId: '1',
+          email: 'jemuel.lupo@gmail.com',
+          name: 'Jemuel Lupo',
+          tempPassword: 'Password123!',
+          batch: 'Batch  1',
+          origin: 'www.google.com',
+        },
+        opts: {
+          removeOnComplete: true,
+        },
       },
-      opts: {
-        removeOnComplete: true,
+      {
+        name: 'email',
+        data: {
+          tribeId: '1',
+          email: 'jemuel.lupo@gmail.com',
+          name: 'Jemuel Lupo',
+          tempPassword: 'Password123!',
+          batch: 'Batch  1',
+          origin: 'www.google.com',
+        },
+        opts: {
+          removeOnComplete: true,
+        },
       },
-    },
-    {
-      name: 'email',
-      data: {
-        tribeId: '1',
-        email: 'jemuel.lupo@gmail.com',
-        name: 'Jemuel Lupo',
-        tempPassword: 'Password123!',
-        batch: 'Batch  1',
-        origin: 'www.google.com',
+      {
+        name: 'email',
+        data: {
+          tribeId: '1',
+          email: 'jemuel.lupo@gmail.com',
+          name: 'Jemuel Lupo',
+          tempPassword: 'Password123!',
+          batch: 'Batch  1',
+          origin: 'www.google.com',
+        },
+        opts: {
+          removeOnComplete: true,
+        },
       },
-      opts: {
-        removeOnComplete: true,
-      },
-    },
-    {
-      name: 'email',
-      data: {
-        tribeId: '1',
-        email: 'jemuel.lupo@gmail.com',
-        name: 'Jemuel Lupo',
-        tempPassword: 'Password123!',
-        batch: 'Batch  1',
-        origin: 'www.google.com',
-      },
-      opts: {
-        removeOnComplete: true,
-      },
-    },
-  ])
-  // .then(async(_r) => {
-  //   await emailQueue.getJobs(['delayed', 'waiting', 'active']).then(async(jobs) => {
-  //     let i = 0
+    ])
+    .then(async (_r) => {
+      await emailQueue.on('waiting', (jobId) => {
+        console.log(`Job ${jobId} is now in waiting list!`)
+      })
 
-  //     while(i < jobs.length){
-  //       await emailProcess().then(async(_r) => {
-  //         console.log(`Process ${jobs[i].id} Done!`)
-  //         await jobs[i].moveToCompleted('Successfully completed!', true)
-  //         await jobs[i].takeLock()
-  //         await jobs[i].releaseLock()
-  //         await jobs[i].remove()
-  //       })
-  //       await i++
-  //     }
-  //   })
-  // })
+      await emailQueue.on('active', (job) => {
+        console.log(`Job ${job.id} is now in active!`)
+      })
+
+      await emailQueue.process(async (job, done) => {
+        console.log(`Job ${job.id} is now processing!`)
+        await emailProcess().then((_r) => {
+          console.log(`Job ${job.id} is now finished!`)
+          done()
+        })
+      })
+
+      // await emailQueue
+      //   .getJobs(['delayed', 'waiting', 'active'])
+      //   .then(async (jobs) => {
+      //     let i = 0
+
+      //     while (i < jobs.length) {
+      //       await emailProcess().then(async (_r) => {
+      //         console.log(`Process ${jobs[i].id} Done!`)
+      //         await jobs[i].takeLock()
+      //         await jobs[i].moveToCompleted('Successfully completed!', true)
+      //         await jobs[i].releaseLock()
+      //         await jobs[i].remove()
+      //       })
+      //       await i++
+      //     }
+      //   })
+    })
   // .then(async(_queue) => {
   //   const worker = await new Worker(
   //     'email',
@@ -146,36 +165,36 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   }
 }
 
-// const emailProcess = async () => {
-//   try {
-//     const response = await axios.post(
-//       'https://api.brevo.com/v3/smtp/email',
-//       {
-//         sender: {
-//           name: `"Atlas Admin" <${CONFIG.brevo.senderEmail}>`,
-//           email: CONFIG.brevo.tempSenderEmail,
-//         },
-//         to: [
-//           {
-//             email: 'jemuel.lupo@gmail.com',
-//             name: 'Dev Testing',
-//           },
-//         ],
-//         htmlContent: 'Hello, this is testing',
-//         subject: 'Testing this part',
-//       },
-//       {
-//         headers: {
-//           accept: 'application/json',
-//           'api-key': CONFIG.brevo.apiKey,
-//         },
-//       }
-//     )
+const emailProcess = async () => {
+  try {
+    const response = await axios.post(
+      'https://api.brevo.com/v3/smtp/email',
+      {
+        sender: {
+          name: `"Atlas Admin" <${CONFIG.brevo.senderEmail}>`,
+          email: CONFIG.brevo.tempSenderEmail,
+        },
+        to: [
+          {
+            email: 'jemuel.lupo@gmail.com',
+            name: 'Dev Testing',
+          },
+        ],
+        htmlContent: 'Hello, this is testing',
+        subject: 'Testing this part',
+      },
+      {
+        headers: {
+          accept: 'application/json',
+          'api-key': CONFIG.brevo.apiKey,
+        },
+      }
+    )
 
-//     // Handle the response here if needed
-//     console.log('Email sent:', response.data)
-//   } catch (error) {
-//     // Handle errors here
-//     console.error('Error sending email:', error)
-//   }
-// }
+    // Handle the response here if needed
+    console.log('Email sent:', response.data)
+  } catch (error) {
+    // Handle errors here
+    console.error('Error sending email:', error)
+  }
+}
