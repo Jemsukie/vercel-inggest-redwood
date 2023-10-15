@@ -27,7 +27,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   logger.info('Invoked createQueue function')
   console.log('Invoked createQueue function')
 
-  processEmails()
+  // processEmails()
   await emailQueue.addBulk([
     {
       name: 'email',
@@ -165,7 +165,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
   }
 }
 
-const processEmails = async () => {
+const _processEmails = async () => {
   console.log(`Let's run processEmails queue`)
 
   await emailQueue.process('email', async (job, done) => {
