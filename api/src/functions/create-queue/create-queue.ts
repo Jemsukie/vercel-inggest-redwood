@@ -81,7 +81,7 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
         console.log(`Job ${job.id} is now in active!`)
       })
 
-      emailQueue.process(async (job, done) => {
+      emailQueue.process('email', async (job, done) => {
         console.log(`Job ${job.id} is now processing!`)
         await emailProcess().then((_r) => {
           console.log(`Job ${job.id} is now finished!`)
