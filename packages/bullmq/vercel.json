@@ -5,5 +5,17 @@
           "src": "./index.mjs",
           "use": "@vercel/node"
       }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "./index.mjs"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/every-minute",
+      "schedule": "* * * * *"
+    }
   ]
 }
