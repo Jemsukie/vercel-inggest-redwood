@@ -11,11 +11,5 @@
       "src": "/",
       "dest": "./index.mjs"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/every-minute",
-      "schedule": "* * * * *"
-    }
   ]
 }
