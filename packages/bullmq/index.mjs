@@ -6,8 +6,13 @@ import emailProcess from './utils/email.mjs'
 
 const app = express()
 
-app.listen(() => {
-  const worker = new Worker(
+app.get('/', () => {
+  console.log('Root path')
+})
+
+app.listen(async () => {
+  console.log('Express listening...')
+  const worker = await new Worker(
     'email',
     async (job) => {
       const { id, data } = job
@@ -26,19 +31,19 @@ app.listen(() => {
     }
   )
 
-  worker.on('completed', (job) => {
+  await worker.on('completed', (job) => {
     console.log(`${new Date()} - Job ID: ${job.id} is done!`)
   })
-  worker.on('active', (job) => {
+  await worker.on('active', (job) => {
     console.log(`${new Date()} - Job ID: ${job.id} is running!`)
   })
-  worker.on('error', (err) => {
+  await worker.on('error', (err) => {
     console.error(err)
   })
-  worker.on('failed', (job, err) => {
+  await worker.on('failed', (job, err) => {
     console.error(`${new Date()} - ${job.id} has failed with ${err}`)
   })
-  worker.on('drained', () => {
+  await worker.on('drained', () => {
     console.log(`${new Date()} - No more jobs`)
   })
 })
