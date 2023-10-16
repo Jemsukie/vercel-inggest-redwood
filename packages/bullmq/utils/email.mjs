@@ -48,6 +48,11 @@ const sendEmail = async ({ to, template, params }) => {
       ...compileTemplate({ data, params }),
     }),
   })
+    .then((result) => {
+      console.log('Email Sent!')
+      return result
+    })
+    .catch((err) => console.error(err))
 }
 
 const compileTemplate = ({ data, params }) => {

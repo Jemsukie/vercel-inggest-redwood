@@ -1,7 +1,10 @@
 import { Worker } from 'bullmq'
+import express from 'express'
 
 import { CONFIG } from './service/config.mjs'
 import emailProcess from './utils/email.mjs'
+
+const app = express()
 
 const worker = new Worker(
   'email',
@@ -37,3 +40,5 @@ worker.on('failed', (job, err) => {
 worker.on('drained', () => {
   console.log(`${new Date()} - No more jobs`)
 })
+
+export default app
