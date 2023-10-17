@@ -42,19 +42,19 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
     },
   }
 
-  await worker.on('completed', (job) => {
+  worker.on('completed', (job) => {
     console.log(`${new Date()} - Job ID: ${job.id} is done!`)
   })
-  await worker.on('active', (job) => {
+  worker.on('active', (job) => {
     console.log(`${new Date()} - Job ID: ${job.id} is running!`)
   })
-  await worker.on('error', (err) => {
+  worker.on('error', (err) => {
     console.error(err)
   })
-  await worker.on('failed', (job, err) => {
+  worker.on('failed', (job, err) => {
     console.error(`${new Date()} - ${job?.id} has failed with ${err}`)
   })
-  await worker.on('drained', async () => {
+  worker.on('drained', async () => {
     console.log(`${new Date()} - No more jobs`)
   })
 
