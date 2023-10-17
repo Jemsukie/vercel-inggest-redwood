@@ -41,9 +41,9 @@ const configureFastify = async (fastify, options) => {
   if (options.side === 'api') {
     fastify.log.info({ custom: { options } }, 'Configuring api side')
     dotenv.config()
-    console.log('process.env.JOB_QUEUE_HOST', process.env.JOB_QUEUE_HOST)
+    console.log('process.env.JOB_QUEUE_HOST')
 
-    await new Worker(
+    const worker = new Worker(
       'email',
       async (job) => {
         const { id, data } = job
@@ -66,6 +66,22 @@ const configureFastify = async (fastify, options) => {
         },
       }
     )
+
+    worker.on('completed', (job) => {
+      console.log(`${new Date()} - Job ID: ${job.id} is done!`)
+    })
+    worker.on('active', (job) => {
+      console.log(`${new Date()} - Job ID: ${job.id} is running!`)
+    })
+    worker.on('error', (err) => {
+      console.error(err)
+    })
+    worker.on('failed', (job, err) => {
+      console.error(`${new Date()} - ${job?.id} has failed with ${err}`)
+    })
+    worker.on('drained', async () => {
+      console.log(`${new Date()} - No more jobs`)
+    })
   }
 
   if (options.side === 'web') {
