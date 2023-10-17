@@ -12,6 +12,9 @@
  * Note: This configuration does not apply in a serverless deploy.
  */
 
+const { Worker } = require('bullmq')
+const dotenv = require('dotenv')
+
 /** @type {import('fastify').FastifyServerOptions} */
 const config = {
   requestTimeout: 15_000,
@@ -37,6 +40,32 @@ const config = {
 const configureFastify = async (fastify, options) => {
   if (options.side === 'api') {
     fastify.log.info({ custom: { options } }, 'Configuring api side')
+    dotenv.config()
+    console.log('process.env.JOB_QUEUE_HOST', process.env.JOB_QUEUE_HOST)
+
+    await new Worker(
+      'email',
+      async (job) => {
+        const { id, data } = job
+
+        console.log(`${new Date()} - Job ID: ${id} is being processed!`)
+
+        console.log('--this is data', data)
+      },
+      {
+        removeOnComplete: {
+          age: 1,
+          count: 0,
+        },
+        lockDuration: 3600000,
+        connection: {
+          host: process.env.JOB_QUEUE_HOST || '127.0.0.1',
+          port: parseInt(process.env.JOB_QUEUE_PORT || '6379'),
+          username: process.env.JOB_QUEUE_USERNAME || '',
+          password: process.env.JOB_QUEUE_PASSWORD || '',
+        },
+      }
+    )
   }
 
   if (options.side === 'web') {
