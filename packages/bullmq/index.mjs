@@ -1,7 +1,9 @@
 import { Worker } from 'bullmq'
 import dotenv from 'dotenv'
-
+import express from 'express'
 dotenv.config()
+
+const app = express()
 
 const CONFIG = {
   redis: {
@@ -110,7 +112,7 @@ const CONFIG = {
 const worker = new Worker(
   'email',
   async (job) => {
-    const { id, data } = job
+    const { id } = job
 
     console.log(`${new Date()} - Job ID: ${id} is being processed!`)
 
@@ -138,6 +140,8 @@ worker.on('error', (err) => {
 worker.on('failed', (job, err) => {
   console.error(`${new Date()} - ${job.id} has failed with ${err}`)
 })
-// worker.on('drained', () => {
-//   console.log(`${new Date()} - No more jobs`)
-// })
+worker.on('drained', () => {
+  console.log(`${new Date()} - No more jobs`)
+})
+
+export default app
