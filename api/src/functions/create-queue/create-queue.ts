@@ -3,7 +3,7 @@ import type { APIGatewayEvent, Context } from 'aws-lambda'
 // import { Queue, Worker } from 'bullmq'
 
 import { CONFIG } from 'src/lib/constants'
-import emailQueue from 'src/lib/email'
+import emailQueue, { worker } from 'src/lib/email'
 import { logger } from 'src/lib/logger'
 
 const axios = require('axios')
@@ -42,7 +42,24 @@ export const handler = async (_event: APIGatewayEvent, _context: Context) => {
     },
   }
 
+  await worker.on('completed', (job) => {
+    console.log(`${new Date()} - Job ID: ${job.id} is done!`)
+  })
+  await worker.on('active', (job) => {
+    console.log(`${new Date()} - Job ID: ${job.id} is running!`)
+  })
+  await worker.on('error', (err) => {
+    console.error(err)
+  })
+  await worker.on('failed', (job, err) => {
+    console.error(`${new Date()} - ${job?.id} has failed with ${err}`)
+  })
+  await worker.on('drained', async () => {
+    console.log(`${new Date()} - No more jobs`)
+  })
+
   await emailQueue.addBulk([data])
+
   // .then(async (_r) => {
   // await emailQueue.process('email', async (job, done) => {
   //   console.log(`Job ${job.id} is now processing!`)
