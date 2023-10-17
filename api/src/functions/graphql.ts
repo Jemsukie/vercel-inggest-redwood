@@ -7,13 +7,17 @@ import services from 'src/services/**/*.{js,ts}'
 import { db } from 'src/lib/db'
 import { logger } from 'src/lib/logger'
 
-export const handler = createGraphQLHandler({
-  loggerConfig: { logger, options: {} },
-  directives,
-  sdls,
-  services,
-  onException: () => {
-    // Disconnect from your database with an unhandled exception.
-    db.$disconnect()
-  },
-})
+export const handler = () => {
+  console.log('--this is graphql handler')
+
+  return createGraphQLHandler({
+    loggerConfig: { logger, options: {} },
+    directives,
+    sdls,
+    services,
+    onException: () => {
+      // Disconnect from your database with an unhandled exception.
+      db.$disconnect()
+    },
+  })
+}
