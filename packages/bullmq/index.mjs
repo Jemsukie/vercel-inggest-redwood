@@ -115,7 +115,6 @@ const worker = new Worker(
     console.log(`${new Date()} - Job ID: ${id} is being processed!`)
 
     // await emailProcess({ data })
-    console.log('--this is data', data)
   },
   {
     removeOnComplete: {
