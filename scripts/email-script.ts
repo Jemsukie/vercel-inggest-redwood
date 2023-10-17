@@ -12,10 +12,10 @@ export default async () => {
         console.log('--this is data', data)
       },
       {
-        // removeOnComplete: {
-        //   age: 1,
-        //   count: 0,
-        // },
+        removeOnComplete: {
+          age: 1,
+          count: 0,
+        },
         lockDuration: 30000,
         connection: CONFIG.redis.jobQueueConnection,
       }
