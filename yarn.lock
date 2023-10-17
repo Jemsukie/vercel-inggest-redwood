@@ -9466,6 +9466,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bull@workspace:packages/bull":
+  version: 0.0.0-use.local
+  resolution: "bull@workspace:packages/bull"
+  dependencies:
+    bull: ^4.11.4
+    bullmq: ^4.12.4
+    ioredis: ^5.3.2
+    redis: ^4.6.10
+  languageName: unknown
+  linkType: soft
+
 "bullmq@npm:^4.12.4":
   version: 4.12.4
   resolution: "bullmq@npm:4.12.4"
