@@ -1,5 +1,5 @@
 {
-  "name": "bullmq",
+  "name": "bull",
   "scripts": {
     "start": "node index.mjs"
   },
