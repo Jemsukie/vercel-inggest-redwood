@@ -1,9 +1,6 @@
 import { Worker } from 'bullmq'
 import dotenv from 'dotenv'
-import express from 'express'
 dotenv.config()
-
-const app = express()
 
 const CONFIG = {
   redis: {
@@ -143,5 +140,3 @@ worker.on('failed', (job, err) => {
 worker.on('drained', () => {
   console.log(`${new Date()} - No more jobs`)
 })
-
-export default app
