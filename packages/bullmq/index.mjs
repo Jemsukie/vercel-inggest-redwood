@@ -1,9 +1,7 @@
 import { Worker } from 'bullmq'
 import dotenv from 'dotenv'
-import express from 'express'
 
 dotenv.config()
-const app = express()
 
 const CONFIG = {
   redis: {
@@ -26,7 +24,7 @@ const CONFIG = {
   },
 }
 
-const emailProcess = ({
+const _emailProcess = ({
   data: { tribeId, email, name, tempPassword, batch, origin, template },
 }) => {
   const params = {
@@ -109,41 +107,38 @@ const compileTemplate = ({ data, params }) => {
   }
 }
 
-app.get('/', (_req, _res) => {
-  const worker = new Worker(
-    'email',
-    async (job) => {
-      const { id, data } = job
+const worker = new Worker(
+  'email',
+  async (job) => {
+    const { id, data } = job
 
-      console.log(`${new Date()} - Job ID: ${id} is being processed!`)
+    console.log(`${new Date()} - Job ID: ${id} is being processed!`)
 
-      await emailProcess({ data })
+    // await emailProcess({ data })
+    console.log('--this is data', data)
+  },
+  {
+    removeOnComplete: {
+      age: 1,
+      count: 0,
     },
-    {
-      removeOnComplete: {
-        age: 1,
-        count: 0,
-      },
-      lockDuration: 3600000,
-      connection: CONFIG.redis.jobQueueConnection,
-    }
-  )
+    lockDuration: 3600000,
+    connection: CONFIG.redis.jobQueueConnection,
+  }
+)
 
-  worker.on('completed', (job) => {
-    console.log(`${new Date()} - Job ID: ${job.id} is done!`)
-  })
-  worker.on('active', (job) => {
-    console.log(`${new Date()} - Job ID: ${job.id} is running!`)
-  })
-  worker.on('error', (err) => {
-    console.error(err)
-  })
-  worker.on('failed', (job, err) => {
-    console.error(`${new Date()} - ${job.id} has failed with ${err}`)
-  })
-  worker.on('drained', () => {
-    console.log(`${new Date()} - No more jobs`)
-  })
+worker.on('completed', (job) => {
+  console.log(`${new Date()} - Job ID: ${job.id} is done!`)
 })
-
-export default app
+worker.on('active', (job) => {
+  console.log(`${new Date()} - Job ID: ${job.id} is running!`)
+})
+worker.on('error', (err) => {
+  console.error(err)
+})
+worker.on('failed', (job, err) => {
+  console.error(`${new Date()} - ${job.id} has failed with ${err}`)
+})
+worker.on('drained', () => {
+  console.log(`${new Date()} - No more jobs`)
+})
