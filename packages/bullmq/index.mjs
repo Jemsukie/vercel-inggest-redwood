@@ -1,7 +1,7 @@
 // server.js
 import express from 'express'
 
-import { emailQueue } from './queues'
+import { emailQueue } from './api/bull.mjs'
 
 const app = express()
 
